@@ -8,8 +8,10 @@ Provides disease name, confidence score, clinical description, Learn More URL, a
 > **Disclaimer:** This tool is for educational and informational purposes only. It is NOT a medical diagnosis. Always consult a qualified dermatologist for any skin concerns.
 ## Website
 
+### Landing Page
 ![Landing Page](assets/landing_page.png)
 
+### Prediction & Grad-CAM Analysis
 ![Prediction with Grad-CAM](assets/analysis_page.png)
 
 ---
