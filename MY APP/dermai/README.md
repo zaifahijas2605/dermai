@@ -281,18 +281,15 @@ The `multiply` layer (output: `None, 7, 7, 1280`) captures both spatial features
 
 
 ## Running with Docker
-
-The system can be deployed using Docker Compose, which runs both the API service and PostgreSQL database in separate containers.
 ```bash
 docker compose up --build
+```
 
-#Once the containers start, open:
+Once the containers start, open http://localhost:8000
 
-http://localhost:8000
+The trained model at `ml/skin_model.keras` is mounted automatically.
 
-#The trained model located at ml/skin_model.keras is mounted into the container and loaded automatically during startup.
-
-#To stop the containers:
-
+To stop:
 ```bash
 docker compose down
+```
