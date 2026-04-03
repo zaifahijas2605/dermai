@@ -6,6 +6,12 @@ AI-powered skin disease classification using MobileNetV2 + Squeeze-and-Excitatio
 Provides disease name, confidence score, clinical description, Learn More URL, and Grad-CAM++ heatmap.
 
 > **Disclaimer:** This tool is for educational and informational purposes only. It is NOT a medical diagnosis. Always consult a qualified dermatologist for any skin concerns.
+## Website
+
+![Landing Page](assets/landing.png)
+
+
+![Prediction with Grad-CAM](assets/demo.png)
 
 ---
 
