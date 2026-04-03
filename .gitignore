@@ -1,0 +1,11 @@
+.env
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
+*.db
+*.sqlite
+.venv/
+venv/
+.DS_Store
+{api}/

@@ -1,0 +1,68 @@
+diseases:
+  - class_id: 0
+    name: "Actinic Keratosis"
+    icd10: "L57.0"
+    learn_more_url: "https://dermnetnz.org/topics/actinic-keratosis"
+    description: >
+      Actinic keratosis is a pre-cancerous, rough, scaly patch caused by
+      years of sun exposure. It may progress to squamous cell carcinoma if
+      left untreated, so medical evaluation and treatment are recommended.
+
+  - class_id: 1
+    name: "Basal Cell Carcinoma"
+    icd10: "C44"
+    learn_more_url: "https://dermnetnz.org/topics/basal-cell-carcinom"
+    description: >
+      Basal cell carcinoma (BCC) is the most common form of skin cancer,
+      growing slowly and rarely spreading to other parts of the body. It
+      typically appears as a pearly bump or flat scar-like lesion and is
+      highly treatable when caught early.
+
+  - class_id: 2
+    name: "Benign Keratosis"
+    icd10: "L82"
+    learn_more_url: "https://dermnetnz.org/topics/seborrhoeic-keratosis"
+    description: >
+      Benign keratosis (seborrhoeic keratosis) are non-cancerous skin growths
+      that commonly appear as waxy, stuck-on-looking lesions on older adults.
+      They are entirely benign and require no treatment unless irritated or
+      cosmetically bothersome.
+
+  - class_id: 3
+    name: "Dermatofibroma"
+    icd10: "D23"
+    learn_more_url: "https://dermnetnz.org/topics/dermatofibroma"
+    description: >
+      Dermatofibromas are common, benign skin nodules that typically appear
+      as small, firm, slightly raised bumps on the legs. They are generally
+      harmless and rarely require treatment unless symptomatic.
+
+  - class_id: 4
+    name: "Melanoma"
+    icd10: "C43"
+    learn_more_url: "https://dermnetnz.org/topics/melanoma"
+    description: >
+      Melanoma is the most serious type of skin cancer, arising from the
+      pigment-producing melanocyte cells. Early detection is critical, as
+      survival rates drop significantly with disease progression — consult a
+      dermatologist immediately if melanoma is suspected.
+
+  - class_id: 5
+    name: "Melanocytic Nevi"
+    icd10: "D22"
+    learn_more_url: "https://dermnetnz.org/topics/melanocytic-naevus"
+    description: >
+      Melanocytic nevi (commonly known as moles) are benign proliferations of
+      melanocytes that appear as pigmented spots on the skin. They are usually
+      harmless, but changes in size, shape, or colour should be evaluated by
+      a dermatologist.
+
+  - class_id: 6
+    name: "Vascular Lesion"
+    icd10: "D18"
+    learn_more_url: "https://dermnetnz.org/topics/vascular-proliferations-and-abnormalities-of-blood-vessels"
+    description: >
+      Vascular lesions are abnormalities of blood vessels visible through or
+      on the skin, including haemangiomas and port-wine stains. Most are
+      benign, but new or rapidly changing vascular lesions warrant clinical
+      assessment.

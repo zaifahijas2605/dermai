@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DermAI — Sign In</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:       #080b12;
+      --surface:  #0f1520;
+      --surface2: #161d2e;
+      --border:   rgba(255,255,255,0.07);
+      --cyan:     #00d4ff;
+      --blue:     #3b82f6;
+      --danger:   #ef4444;
+      --success:  #10b981;
+      --text:     #e2e8f0;
+      --text-dim: #94a3b8;
+      --text-muted: #4b5563;
+    }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+    }
+    .glow-top {
+      position: fixed;
+      width: 500px; height: 400px;
+      background: radial-gradient(ellipse, rgba(0,212,255,0.07) 0%, transparent 65%);
+      top: -100px; left: 50%;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+    .glow-bottom {
+      position: fixed;
+      width: 350px; height: 350px;
+      background: radial-gradient(circle, rgba(59,130,246,0.05) 0%, transparent 70%);
+      bottom: -50px; right: 5%;
+      pointer-events: none;
+    }
+
+    
+    .auth-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2.75rem 2.5rem;
+      width: 100%;
+      max-width: 420px;
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+    }
+    .auth-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 10%; right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,212,255,0.4), transparent);
+    }
+
+    
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.82rem;
+      margin-bottom: 2rem;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--text-dim); }
+
+    
+    .brand { text-align: center; margin-bottom: 2rem; }
+    .brand-icon {
+      width: 60px; height: 60px;
+      background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(59,130,246,0.1));
+      border: 1px solid rgba(0,212,255,0.2);
+      border-radius: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+    }
+    .brand h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 0.3rem;
+    }
+    .brand h1 span { color: var(--cyan); }
+    .brand p { color: var(--text-muted); font-size: 0.875rem; font-weight: 300; }
+
+    
+    .alert {
+      padding: 0.8rem 1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      border-left: 3px solid;
+    }
+    .alert-error   { background: rgba(239,68,68,0.08);   color: #f87171; border-color: var(--danger); }
+    .alert-success { background: rgba(16,185,129,0.08);  color: #34d399; border-color: var(--success); }
+
+    
+    .form-group { margin-bottom: 1.1rem; }
+    .form-group label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-dim);
+      margin-bottom: 0.45rem;
+      letter-spacing: 0.3px;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.93rem;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+    .form-group input::placeholder { color: var(--text-muted); }
+    .form-group input:focus {
+      border-color: rgba(0,212,255,0.4);
+      box-shadow: 0 0 0 3px rgba(0,212,255,0.08);
+    }
+    .form-group input.err { border-color: rgba(239,68,68,0.5); }
+
+    
+    .btn-submit {
+      width: 100%;
+      padding: 0.85rem;
+      background: var(--cyan);
+      color: #080b12;
+      border: none;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.25s;
+      margin-top: 0.5rem;
+      box-shadow: 0 0 25px rgba(0,212,255,0.2);
+    }
+    .btn-submit:hover:not(:disabled) {
+      background: #22e5ff;
+      transform: translateY(-1px);
+      box-shadow: 0 0 40px rgba(0,212,255,0.35);
+    }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    
+    .auth-switch {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .auth-switch a {
+      color: var(--cyan);
+      text-decoration: none;
+      font-weight: 600;
+      transition: opacity 0.2s;
+    }
+    .auth-switch a:hover { opacity: 0.8; }
+
+    
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 1.5rem 0 0;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+  </style>
+</head>
+<body>
+  <div class="glow-top"></div>
+  <div class="glow-bottom"></div>
+
+  <div class="auth-card">
+    <a href="index.html" class="back-link">← Back to home</a>
+
+    <div class="brand">
+      <div class="brand-icon">🔬</div>
+      <h1>Derm<span>AI</span></h1>
+      <p>Sign in to your account</p>
+    </div>
+
+    <div id="alert-box" class="alert" style="display:none"></div>
+
+    <div class="form-group">
+      <label for="email">Email Address</label>
+      <input type="email" id="email" placeholder="you@example.com" autocomplete="email"/>
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="Your password" autocomplete="current-password"/>
+    </div>
+
+    <button class="btn-submit" id="login-btn" onclick="handleLogin()">
+      <span id="btn-text">Sign In →</span>
+    </button>
+
+    <div class="divider">or</div>
+
+    <div class="auth-switch">
+      Don't have an account? <a href="register.html">Create one</a>
+    </div>
+  </div>
+
+<script src="/static/js/api.js"></script>
+<script>
+  console.log("api.js loaded?", typeof TokenStore);
+  if (TokenStore.isLoggedIn()) window.location.href = "/analysis.html";
+
+  function showAlert(msg, type = "error") {
+    const box = document.getElementById("alert-box");
+    box.className = `alert alert-${type}`;
+    box.innerHTML = `<span>${type === "error" ? "⚠️" : "✅"}</span><span>${msg}</span>`;
+    box.style.display = "flex";
+  }
+
+  async function handleLogin() {
+    const email    = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const btn      = document.getElementById("login-btn");
+    const btnText  = document.getElementById("btn-text");
+    if (!email || !password) { showAlert("Please fill in all fields."); return; }
+    btn.disabled = true;
+    btnText.textContent = "Signing in…";
+    const { ok, data, status } = await AuthAPI.login(email, password);
+    if (ok) {
+      window.location.href = "/analysis.html";
+    } else {
+      btn.disabled = false;
+      btnText.textContent = "Sign In →";
+      showAlert(status === 429 ? extractError(data) : "Invalid email or password. Please try again.");
+    }
+  }
+
+  document.addEventListener("keydown", e => { if (e.key === "Enter") handleLogin(); });
+</script>
+</body>
+</html>

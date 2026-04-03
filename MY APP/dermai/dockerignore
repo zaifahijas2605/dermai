@@ -1,0 +1,13 @@
+**/__pycache__
+**/*.pyc
+**/*.pyo
+.pytest_cache
+tests/
+*.db
+.coverage
+.env
+.git
+.gitignore
+README.md
+setup_db.sh
+pytest.ini

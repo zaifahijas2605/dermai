@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DermAI — Analysis</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:         #080b12;
+      --bg2:        #0d1117;
+      --surface:    #0f1520;
+      --surface2:   #161d2e;
+      --surface3:   #1e2a42;
+      --border:     rgba(255,255,255,0.07);
+      --border2:    rgba(255,255,255,0.12);
+      --cyan:       #00d4ff;
+      --blue:       #3b82f6;
+      --green:      #10b981;
+      --warning:    #f59e0b;
+      --danger:     #ef4444;
+      --text:       #e2e8f0;
+      --text-dim:   #94a3b8;
+      --text-muted: #4b5563;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.02) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2.5rem;
+      background: rgba(8,11,18,0.92);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.3px;
+    }
+    .logo span { color: var(--cyan); }
+    .nav-user {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .nav-user .username {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 0.35rem 0.9rem;
+      border-radius: 100px;
+    }
+    .nav-user .sign-out-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      padding: 0.35rem 0.9rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.83rem;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.2s;
+    }
+    .nav-user .sign-out-btn:hover {
+      border-color: rgba(239,68,68,0.4);
+      color: #f87171;
+      background: rgba(239,68,68,0.06);
+    }
+
+    
+    .spinner-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(8,11,18,0.88);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.25rem;
+    }
+    .spinner-overlay.active { display: flex; }
+    .spinner-ring {
+      width: 60px; height: 60px;
+      border: 3px solid rgba(0,212,255,0.1);
+      border-top-color: var(--cyan);
+      border-radius: 50%;
+      animation: spin 0.85s linear infinite;
+      box-shadow: 0 0 25px rgba(0,212,255,0.2);
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner-text {
+      font-size: 0.95rem;
+      color: var(--text-dim);
+      font-weight: 300;
+      letter-spacing: 0.3px;
+    }
+
+    
+    main {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    
+    .disclaimer-top {
+      background: rgba(239,68,68,0.05);
+      border: 1px solid rgba(239,68,68,0.2);
+      border-left: 4px solid var(--danger);
+      border-radius: 10px;
+      padding: 0.9rem 1.2rem;
+      font-size: 0.83rem;
+      color: #fca5a5;
+      margin-bottom: 1.5rem;
+      line-height: 1.7;
+    }
+
+    
+    .upload-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+    }
+    .upload-card h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+    }
+    .upload-card .sub {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    
+    .alert {
+      padding: 0.8rem 1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      border-left: 3px solid;
+      line-height: 1.6;
+    }
+    .alert-error   { background: rgba(239,68,68,0.08);  color: #f87171; border-color: var(--danger); }
+    .alert-warning { background: rgba(245,158,11,0.08); color: #fbbf24; border-color: var(--warning); }
+    .alert-success { background: rgba(16,185,129,0.08); color: #34d399; border-color: var(--green); }
+
+    
+    .upload-zone {
+      border: 2px dashed rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 3rem 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s;
+      background: rgba(255,255,255,0.02);
+      position: relative;
+    }
+    .upload-zone:hover, .upload-zone.dragover {
+      border-color: rgba(0,212,255,0.35);
+      background: rgba(0,212,255,0.03);
+    }
+    .upload-zone.has-image {
+      border-style: solid;
+      border-color: rgba(0,212,255,0.3);
+      padding: 1rem;
+    }
+    .upload-zone #file-input { display: none; }
+    .upload-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .upload-zone h3 { font-size: 1rem; font-weight: 500; color: var(--text-dim); margin-bottom: 0.3rem; }
+    .upload-zone p  { font-size: 0.8rem; color: var(--text-muted); }
+    .upload-preview {
+      max-width: 100%;
+      max-height: 240px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    
+    .btn-row { display: flex; gap: 1rem; margin-top: 1.25rem; }
+    .btn-analyse {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.82rem 1.5rem;
+      background: var(--cyan);
+      color: #080b12;
+      border: none;
+      border-radius: 9px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.93rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.25s;
+      box-shadow: 0 0 25px rgba(0,212,255,0.18);
+    }
+    .btn-analyse:hover:not(:disabled) {
+      background: #22e5ff;
+      transform: translateY(-1px);
+      box-shadow: 0 0 40px rgba(0,212,255,0.32);
+    }
+    .btn-analyse:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-reset {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.82rem 1.25rem;
+      background: transparent;
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-reset:hover { border-color: var(--border2); color: var(--text); background: rgba(255,255,255,0.04); }
+
+    
+    #results-section { display: none; }
+    #results-section.visible { display: block; }
+
+    .result-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    
+    .result-header {
+      background: linear-gradient(135deg, #0a1628, #111e35);
+      border-bottom: 1px solid var(--border);
+      padding: 1.4rem 1.75rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .result-header-icon { font-size: 1.6rem; }
+    .result-header-meta { flex: 1; }
+    .result-header-label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      margin-bottom: 0.2rem;
+    }
+    .result-header h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.3px;
+    }
+
+   
+    .result-badge {
+      display: inline-block;
+      padding: 0.3rem 0.8rem;
+      border-radius: 100px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .badge-high     { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+    .badge-low      { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+    .badge-very_low { background: rgba(239,68,68,0.15);  color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+
+    
+    .result-body { padding: 1.75rem; }
+
+    .confidence-bar-wrap { margin: 1rem 0 1.5rem; }
+    .confidence-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-dim);
+      margin-bottom: 0.5rem;
+    }
+    .confidence-label span:last-child { color: var(--text); font-size: 0.95rem; }
+    .confidence-bar {
+      height: 6px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.06);
+      overflow: hidden;
+    }
+    .confidence-fill {
+      height: 100%;
+      border-radius: 10px;
+      transition: width 1s cubic-bezier(0.4,0,0.2,1);
+      background: linear-gradient(90deg, var(--cyan), var(--blue));
+    }
+    .confidence-fill.low      { background: linear-gradient(90deg, var(--warning), #d97706); }
+    .confidence-fill.very_low { background: linear-gradient(90deg, var(--danger), #dc2626); }
+
+    .section-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      margin: 1.5rem 0 0.5rem;
+    }
+    .result-description {
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      line-height: 1.8;
+      font-weight: 300;
+    }
+    .learn-more-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-top: 1rem;
+      color: var(--cyan);
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      background: rgba(0,212,255,0.07);
+      border: 1px solid rgba(0,212,255,0.15);
+      border-radius: 7px;
+      transition: all 0.2s;
+    }
+    .learn-more-btn:hover {
+      background: rgba(0,212,255,0.12);
+      border-color: rgba(0,212,255,0.3);
+    }
+
+   
+    .gradcam-section {
+      border-top: 1px solid var(--border);
+      padding: 1.75rem;
+    }
+    .gradcam-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+    }
+    .gradcam-subtitle {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+    }
+    .gradcam-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .gradcam-img-wrap {
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+    }
+    .gradcam-img-wrap img { width: 100%; height: auto; display: block; }
+    .gradcam-img-wrap p {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-align: center;
+      padding: 0.4rem;
+      background: rgba(0,0,0,0.2);
+    }
+
+    
+    .disclaimer-bottom {
+      border-top: 1px solid var(--border);
+      padding: 1rem 1.75rem;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      background: rgba(239,68,68,0.03);
+    }
+
+    @media (max-width: 600px) {
+      .app-header { padding: 0.85rem 1rem; }
+      .gradcam-grid { grid-template-columns: 1fr; }
+      .btn-row { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+
+<header class="app-header">
+  <a href="/index.html" class="logo" style="text-decoration:none;">🔬 Derm<span>AI</span></a>
+  <nav class="nav-user">
+    <span class="username" id="user-name">Loading…</span>
+    <button class="sign-out-btn" onclick="AuthAPI.logout()">Sign Out</button>
+  </nav>
+</header>
+
+
+<div class="spinner-overlay" id="spinner">
+  <div class="spinner-ring"></div>
+  <p class="spinner-text">Analysing your image…</p>
+</div>
+
+
+<main>
+
+  
+  <div class="disclaimer-top">
+    🚨 <strong>IMPORTANT:</strong> This tool is for informational and educational purposes only.
+    AI predictions <strong>can be inaccurate</strong>. This is <strong>NOT a medical diagnosis</strong>.
+    Always consult a qualified dermatologist for any skin concerns.
+  </div>
+
+  
+  <div class="upload-card">
+    <h2>Upload Skin Image</h2>
+    <p class="sub">JPEG, PNG or BMP · Max 10 MB · Min 64×64 px</p>
+
+    <div id="alert-box" class="alert" style="display:none"></div>
+
+    <div class="upload-zone" id="drop-zone"
+         onclick="document.getElementById('file-input').click()"
+         ondragover="onDragOver(event)"
+         ondragleave="onDragLeave(event)"
+         ondrop="onDrop(event)">
+      <input type="file" id="file-input" accept="image/jpeg,image/png,image/bmp" onchange="onFileSelect(event)"/>
+      <div id="upload-placeholder">
+        <div class="upload-icon">📷</div>
+        <h3>Drag & drop your image here</h3>
+        <p>or click to browse files</p>
+      </div>
+      <img id="upload-preview" class="upload-preview" style="display:none"/>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-analyse" id="analyse-btn" onclick="runAnalysis()" disabled>
+        🔍 <span id="analyse-text">Analyse Image</span>
+      </button>
+      <button class="btn-reset" onclick="resetUI()">↺ Reset</button>
+    </div>
+  </div>
+
+ 
+  <div id="results-section">
+    <div class="result-card">
+
+      
+      <div class="result-header">
+        <div class="result-header-icon">🩺</div>
+        <div class="result-header-meta">
+          <div class="result-header-label">Classification Result</div>
+          <h2 id="res-disease-name">—</h2>
+        </div>
+        <span class="result-badge" id="res-confidence-badge">—</span>
+      </div>
+
+      
+      <div class="result-body">
+        <div id="low-confidence-alert" class="alert alert-warning" style="display:none">
+          ⚠️ <strong>Low Confidence:</strong> The model is uncertain about this prediction. Please consult a qualified dermatologist.
+        </div>
+        <div id="very-low-confidence-alert" class="alert alert-error" style="display:none">
+          🚨 <strong>Very Low Confidence:</strong> This image may not contain a recognisable skin lesion. Please seek professional advice.
+        </div>
+
+        <div class="confidence-bar-wrap">
+          <div class="confidence-label">
+            <span>Confidence Score</span>
+            <span id="res-confidence-pct">—</span>
+          </div>
+          <div class="confidence-bar">
+            <div class="confidence-fill" id="res-confidence-fill" style="width:0%"></div>
+          </div>
+        </div>
+
+        <div class="section-label">Clinical Description</div>
+        <p class="result-description" id="res-description">—</p>
+
+        <a id="res-learn-more" href="#" target="_blank" rel="noopener" class="learn-more-btn">
+          📖 Learn More →
+        </a>
+      </div>
+
+      
+      <div class="gradcam-section">
+        <div class="gradcam-title">Grad-CAM++ Visualisation</div>
+        <div class="gradcam-subtitle">Where the model focused to make this decision</div>
+        <div id="gradcam-error-msg" class="alert alert-warning" style="display:none">
+          ℹ️ Heatmap could not be generated for this image.
+        </div>
+        <div class="gradcam-grid" id="gradcam-grid" style="display:none">
+          <div class="gradcam-img-wrap">
+            <img id="original-img" src="" alt="Original uploaded image"/>
+            <p>Original Image</p>
+          </div>
+          <div class="gradcam-img-wrap">
+            <img id="gradcam-img" src="" alt="Grad-CAM heatmap overlay"/>
+            <p>Grad-CAM++ Heatmap (multiply layer)</p>
+          </div>
+        </div>
+      </div>
+
+     
+
+    </div>
+  </div>
+
+</main>
+
+<script src="/static/js/api.js"></script>
+<script>
+  requireAuth();
+
+  let selectedFile = null;
+  let originalPreviewSrc = null;
+
+  AuthAPI.getMe().then(({ ok, data }) => {
+    document.getElementById("user-name").textContent = ok ? `👤 ${data.display_name}` : "";
+  });
+
+  function onDragOver(e) {
+    e.preventDefault();
+    document.getElementById("drop-zone").classList.add("dragover");
+  }
+  function onDragLeave() {
+    document.getElementById("drop-zone").classList.remove("dragover");
+  }
+  function onDrop(e) {
+    e.preventDefault();
+    document.getElementById("drop-zone").classList.remove("dragover");
+    const file = e.dataTransfer.files[0];
+    if (file) loadFile(file);
+  }
+  function onFileSelect(e) {
+    const file = e.target.files[0];
+    if (file) loadFile(file);
+  }
+  function loadFile(file) {
+    selectedFile = file;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      originalPreviewSrc = ev.target.result;
+      const preview = document.getElementById("upload-preview");
+      preview.src = originalPreviewSrc;
+      preview.style.display = "block";
+      document.getElementById("upload-placeholder").style.display = "none";
+      document.getElementById("drop-zone").classList.add("has-image");
+      document.getElementById("analyse-btn").disabled = false;
+      hideAlert();
+      document.getElementById("results-section").classList.remove("visible");
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function runAnalysis() {
+    if (!selectedFile) return;
+    const btn     = document.getElementById("analyse-btn");
+    const btnText = document.getElementById("analyse-text");
+    btn.disabled  = true;
+    btnText.textContent = "Analysing…";
+    showSpinner(true);
+    hideAlert();
+    const { ok, data } = await PredictAPI.predict(selectedFile);
+    showSpinner(false);
+    btn.disabled = false;
+    btnText.textContent = "Analyse Image";
+    if (!ok) { showAlert(extractError(data), "error"); return; }
+    renderResults(data);
+  }
+
+  function renderResults(r) {
+    const pct   = Math.round(r.confidence_score * 100);
+    const level = r.confidence_level;
+
+    document.getElementById("res-disease-name").textContent = r.disease_name;
+    const badge = document.getElementById("res-confidence-badge");
+    badge.textContent = level === "high" ? "High Confidence" : level === "low" ? "Low Confidence" : "Very Low";
+    badge.className = `result-badge badge-${level}`;
+
+    document.getElementById("res-confidence-pct").textContent = `${pct}%`;
+    const fill = document.getElementById("res-confidence-fill");
+    fill.style.width = `${pct}%`;
+    fill.className = `confidence-fill ${level !== "high" ? level : ""}`;
+
+    document.getElementById("low-confidence-alert").style.display      = level === "low"      ? "flex" : "none";
+    document.getElementById("very-low-confidence-alert").style.display = level === "very_low" ? "flex" : "none";
+
+    document.getElementById("res-description").textContent = r.clinical_description;
+    const lm = document.getElementById("res-learn-more");
+    lm.href = r.learn_more_url;
+    lm.textContent = "📖 Learn More →";
+
+    if (r.gradcam_image_base64) {
+      document.getElementById("original-img").src = originalPreviewSrc;
+      document.getElementById("gradcam-img").src  = r.gradcam_image_base64;
+      document.getElementById("gradcam-grid").style.display      = "grid";
+      document.getElementById("gradcam-error-msg").style.display = "none";
+    } else {
+      document.getElementById("gradcam-grid").style.display      = "none";
+      document.getElementById("gradcam-error-msg").style.display = "flex";
+      if (r.gradcam_error) document.getElementById("gradcam-error-msg").innerHTML = `ℹ️ ${r.gradcam_error}`;
+    }
+
+    const section = document.getElementById("results-section");
+    section.classList.add("visible");
+    section.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function showSpinner(show) { document.getElementById("spinner").classList.toggle("active", show); }
+  function showAlert(msg, type = "error") {
+    const box = document.getElementById("alert-box");
+    box.className = `alert alert-${type}`;
+    box.innerHTML = `<span>${type === "error" ? "⚠️" : "✅"}</span><span>${msg}</span>`;
+    box.style.display = "flex";
+  }
+  function hideAlert() { document.getElementById("alert-box").style.display = "none"; }
+  function resetUI() {
+    selectedFile = null;
+    originalPreviewSrc = null;
+    document.getElementById("upload-preview").style.display = "none";
+    document.getElementById("upload-placeholder").style.display = "block";
+    document.getElementById("drop-zone").classList.remove("has-image");
+    document.getElementById("analyse-btn").disabled = true;
+    document.getElementById("results-section").classList.remove("visible");
+    document.getElementById("file-input").value = "";
+    hideAlert();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+</script>
+</body>
+</html>
